@@ -1,1 +1,6 @@
+Github:
+https://github.com/Jei-Yi-Lu/Flanker-Compatibility-Task-Chinese-Version-
+
+
+Pavlovia:
 https://gitlab.pavlovia.org/jelu/Flanker_Compatibility_Task
