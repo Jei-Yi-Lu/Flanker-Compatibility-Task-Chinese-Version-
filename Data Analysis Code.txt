@@ -1,0 +1,113 @@
+import pandas as pd
+import numpy as np
+import os
+import matplotlib.pyplot as plt
+from scipy import stats  # Added for Paired t-test
+
+# --- Step 0: Set data path ---
+folder_path = r'C:\Users\user\Desktop\Pilot_Flanker Compatibility Task'
+file_list = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.csv')]
+
+def process_subject(file_path):
+    # Read CSV data
+    df = pd.read_csv(file_path)
+    
+    # 1. Exclude practice trials (Practice Routine)
+    df_formal = df.dropna(subset=['Trials_Loop.thisN']).copy()
+    
+    if df_formal.empty:
+        return None
+    
+    # 2. Optional: Exclude participants with overall accuracy below 85%
+    acc = df_formal['Anskey.corr'].mean()
+    if acc < 0.85:
+        participant = df_formal['participant'].unique()[0]
+        print(f"Participant {participant} accuracy was {acc:.4f}, below the 90% threshold, and has been excluded.")
+        return None
+    
+    # 3. Exclude all incorrect trials
+    df_correct = df_formal[df_formal['Anskey.corr'] == 1].copy()
+    
+    # 4. Unit conversion: Reaction Time from seconds (s) to milliseconds (ms)
+    df_correct['rt_ms'] = df_correct['Anskey.rt'] * 1000
+    
+    # 5. Exclude trials with RT exceeding +/- 2 standard deviations (2SD) for each participant
+    m_rt = df_correct['rt_ms'].mean()
+    sd_rt = df_correct['rt_ms'].std()
+    
+    df_final = df_correct[
+        (df_correct['rt_ms'] >= (m_rt - 2 * sd_rt)) & 
+        (df_correct['rt_ms'] <= (m_rt + 2 * sd_rt))
+    ]
+    
+    return df_final
+
+# --- Step 1: Execute processing and merge data ---
+all_dfs = [process_subject(f) for f in file_list]
+valid_data_list = [d for d in all_dfs if d is not None]
+
+if not valid_data_list:
+    print("No participant data met the analysis criteria.")
+else:
+    all_clean_data = pd.concat(valid_data_list, ignore_index=True)
+
+    # --- Step 2: Redefine labels, Calculate Paired t-test, and statistics ---
+    # Rename for consistency
+    name_mapping = {'comp': 'Compatibility', 'incomp': 'Incompatibility'}
+    all_clean_data['condition'] = all_clean_data['compatibility'].map(name_mapping)
+
+    # Calculate mean RT per participant for each condition (required for Paired t-test)
+    subject_condition_means = all_clean_data.groupby(['participant', 'condition'], observed=True)['rt_ms'].mean().unstack()
+    
+    # Perform Paired t-test
+    t_stat, p_val = stats.ttest_rel(subject_condition_means['Compatibility'], 
+                                   subject_condition_means['Incompatibility'])
+
+    # Calculate overall mean and SEM for plotting
+    plot_stats = all_clean_data.groupby('condition', observed=True)['rt_ms'].agg(['mean', 'std', 'count']).reset_index()
+    plot_stats['sem'] = plot_stats['std'] / np.sqrt(plot_stats['count'])
+    
+    # Ensure X-axis order
+    plot_stats['condition'] = pd.Categorical(plot_stats['condition'], categories=['Compatibility', 'Incompatibility'], ordered=True)
+    plot_stats = plot_stats.sort_values('condition')
+
+    print("\nAnalysis Summary:")
+    print(plot_stats[['condition', 'mean', 'sem']])
+    print(f"\nPaired t-test Results: t = {t_stat:.3f}, p = {p_val:.4f}")
+
+    # --- Step 3: Plot graph using Matplotlib ---
+    plt.figure(figsize=(7, 6))
+    
+    # Plot bar chart
+    bars = plt.bar(plot_stats['condition'], plot_stats['mean'], 
+                   yerr=plot_stats['sem'], 
+                   capsize=10, 
+                   color=['#66c2a5', '#fc8d62'], 
+                   edgecolor='black',
+                   width=0.6)
+
+    # Add SEM values above the error bars (Values only as requested)
+    for i, bar in enumerate(bars):
+        sem_val = plot_stats['sem'].iloc[i]
+        plt.text(bar.get_x() + bar.get_width()/2, plot_stats['mean'].iloc[i] + sem_val + 5, 
+                 f'{sem_val:.2f}', ha='center', va='bottom', fontsize=10)
+
+    # Set title (including t-test results) and labels
+    # Main Title
+    plt.suptitle('Behavioral Performance in Flanker Compatibility Task', 
+                 fontsize=14, fontweight='bold')
+    
+    # Subtitle: t-test results
+    plt.title(f't({len(subject_condition_means)-1}) = {t_stat:.2f}, p = {p_val:.3f}', 
+              fontsize=11, fontweight='normal', pad=10)
+
+    plt.xlabel('Condition', fontsize=12)
+    plt.ylabel('Mean RT (ms)', fontsize=12)
+    
+    # Adjust Y-axis range
+    ymin = plot_stats['mean'].min() - (plot_stats['sem'].max() * 5)
+    ymax = plot_stats['mean'].max() + (plot_stats['sem'].max() * 15) 
+    plt.ylim(max(0, ymin), ymax)
+
+    plt.tight_layout()
+    plt.show()
