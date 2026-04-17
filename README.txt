@@ -1,7 +1,33 @@
 # Flanker Compatibility Task
 
-Task Version:
+## Introduction
+This task is a cognitive psychology experimental paradigm developed using PsychoPy Builder. It is designed to measure participants' selective attention and inhibitory control when facing distracting stimuli. The program specifically integrates dynamic fillers for varying difficulty levels and peripheral distractors to investigate conflict resolution mechanisms under different visual loads.
+
+Reference:
 Green, C. S., & Bavelier, D. (2003). Action video game modifies visual selective attention. Nature, 423(6939), 534-537.
+
+## Procedure
+The experimental procedure is divided into three phases:
+
+### 1. Practice Phase
+* **Goal**: To familiarize participants with the response rules (Press "A" for square, "L" for diamond).
+* **Real-time Feedback**: Immediate feedback ("Correct," "Incorrect," or "Too Slow") is displayed after each trial.
+* **Performance Threshold**: Upon completing the practice, the program automatically calculates the number of correct responses.
+    * **Correct Count ≥ 14**: Practice completed; proceed to the experimental phase.
+    * **Correct Count < 14**: Threshold not met; the counter resets to zero, and the practice phase restarts.
+* **Escape**: If you have to cut down the task, press the "Esc" key anytime you want.
+
+### 2. Experimental Phase
+* **Total Trials**: A total of 192 trials, including different difficulty levels (1–4) and compatibility conditions.
+* **Mid-task Break**: To reduce visual fatigue, a break screen automatically appears after the 96th trial. Participants can determine their own break duration and press the spacebar to continue.
+* **Full Randomization**: Trial order is fully randomized to ensure experimental reliability.
+* **Escape**: If you have to cut down the task, press the "Esc" key anytime you want.
+
+### 3. Summary Feedback (which is excluded from the Practice Phase)
+Upon completion of the experiment, a summary of performance is displayed on the screen:
+* **Overall Accuracy (%)**
+* **Mean Reaction Time for Compatible Condition**
+* **Mean Reaction Time for Incompatible Condition**
 
 
 
@@ -11,7 +37,7 @@ Green, C. S., & Bavelier, D. (2003). Action video game modifies visual selective
 
 *target_type*: the target (i.e., square or diamond) in the circles.
 
-*compatibility*: the target type is the same (i.e., compatible, comp) or different (i.e., incompatible, incomp) from the distractor out of the circles.
+*compatibility*: the target type is the same (i.e., Congruent, con) or different (i.e., Incongruent, incon) from the distractor out of the circles.
 
 *dist_pos_x*: the x-axis position of the distractor that is out of the circles.
 
@@ -22,8 +48,6 @@ Green, C. S., & Bavelier, D. (2003). Action video game modifies visual selective
 *Anskey.corr*: correct or not for each trial (1 = correct; 0 = incorrect).
 
 *Anskey.rt*: reaction time of the key response for each trial (unit: second).
-
-
 
 
 
@@ -41,7 +65,7 @@ Green, C. S., & Bavelier, D. (2003). Action video game modifies visual selective
 
 5. Calculate the mean for each compatibility condition.
 
-6. Compare the average reaction time between compatibility and incompatibility.
+6. Compare the average reaction time between congruent and incongruent.
 
 7. Plot the chart for the comparison. (x: condition; y: reaction time; error bar: SEM)
 

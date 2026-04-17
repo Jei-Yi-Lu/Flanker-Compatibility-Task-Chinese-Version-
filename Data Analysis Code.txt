@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy import stats  # Added for Paired t-test
 
 # --- Step 0: Set data path ---
-folder_path = r'C:\Users\user\Desktop\Pilot_Flanker Compatibility Task'
+folder_path = r'C:\Users\user\Desktop\Pilot_Data'
 file_list = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.csv')]
 
 def process_subject(file_path):
@@ -53,22 +53,22 @@ else:
 
     # --- Step 2: Redefine labels, Calculate Paired t-test, and statistics ---
     # Rename for consistency
-    name_mapping = {'comp': 'Compatibility', 'incomp': 'Incompatibility'}
+    name_mapping = {'cong': 'Congruent', 'incong': 'Incongruent'}
     all_clean_data['condition'] = all_clean_data['compatibility'].map(name_mapping)
 
     # Calculate mean RT per participant for each condition (required for Paired t-test)
     subject_condition_means = all_clean_data.groupby(['participant', 'condition'], observed=True)['rt_ms'].mean().unstack()
     
     # Perform Paired t-test
-    t_stat, p_val = stats.ttest_rel(subject_condition_means['Compatibility'], 
-                                   subject_condition_means['Incompatibility'])
+    t_stat, p_val = stats.ttest_rel(subject_condition_means['Congruent'], 
+                                   subject_condition_means['Incongruent'])
 
     # Calculate overall mean and SEM for plotting
     plot_stats = all_clean_data.groupby('condition', observed=True)['rt_ms'].agg(['mean', 'std', 'count']).reset_index()
     plot_stats['sem'] = plot_stats['std'] / np.sqrt(plot_stats['count'])
     
     # Ensure X-axis order
-    plot_stats['condition'] = pd.Categorical(plot_stats['condition'], categories=['Compatibility', 'Incompatibility'], ordered=True)
+    plot_stats['condition'] = pd.Categorical(plot_stats['condition'], categories=['Congruent', 'Incongruent'], ordered=True)
     plot_stats = plot_stats.sort_values('condition')
 
     print("\nAnalysis Summary:")
@@ -85,12 +85,6 @@ else:
                    color=['#66c2a5', '#fc8d62'], 
                    edgecolor='black',
                    width=0.6)
-
-    # Add SEM values above the error bars (Values only as requested)
-    for i, bar in enumerate(bars):
-        sem_val = plot_stats['sem'].iloc[i]
-        plt.text(bar.get_x() + bar.get_width()/2, plot_stats['mean'].iloc[i] + sem_val + 5, 
-                 f'{sem_val:.2f}', ha='center', va='bottom', fontsize=10)
 
     # Set title (including t-test results) and labels
     # Main Title
