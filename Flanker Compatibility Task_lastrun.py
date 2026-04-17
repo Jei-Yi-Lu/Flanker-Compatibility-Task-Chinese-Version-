@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2026.1.1),
-    on 四月 17, 2026, at 19:39
+    on 四月 17, 2026, at 20:35
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -965,7 +965,7 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
                     s_cong.setOpacity(0)
             
             # 4. 設定外圍 Distractor
-            if compatibility == 'cong':
+            if condition == 'cong':
                 d_v = shapes[target_type]
             else:
                 d_v = shapes['diamond'] if target_type == 'square' else shapes['square']
@@ -1540,7 +1540,7 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
                 if Anskey.corr == 1:
                     expInfo['summary']['corr'] += 1
                     if Anskey.rt is not None:
-                        if compatibility == 'cong':
+                        if condition == 'cong':
                             expInfo['summary']['cong_rt'].append(Anskey.rt)
                         else:
                             expInfo['summary']['incong_rt'].append(Anskey.rt)
@@ -2121,7 +2121,7 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
                 s_cong.setOpacity(0)
         
         # 4. 設定外圍 Distractor
-        if compatibility == 'cong':
+        if condition == 'cong':
             d_v = shapes[target_type]
         else:
             d_v = shapes['diamond'] if target_type == 'square' else shapes['square']
@@ -2696,7 +2696,7 @@ def run(expInfo, thisExp, win, globalClock=None, thisSession=None):
             if Anskey.corr == 1:
                 expInfo['summary']['corr'] += 1
                 if Anskey.rt is not None:
-                    if compatibility == 'cong':
+                    if condition == 'cong':
                         expInfo['summary']['cong_rt'].append(Anskey.rt)
                     else:
                         expInfo['summary']['incong_rt'].append(Anskey.rt)

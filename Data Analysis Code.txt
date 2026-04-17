@@ -54,7 +54,7 @@ else:
     # --- Step 2: Redefine labels, Calculate Paired t-test, and statistics ---
     # Rename for consistency
     name_mapping = {'cong': 'Congruent', 'incong': 'Incongruent'}
-    all_clean_data['condition'] = all_clean_data['compatibility'].map(name_mapping)
+    all_clean_data['condition'] = all_clean_data['condition'].map(name_mapping)
 
     # Calculate mean RT per participant for each condition (required for Paired t-test)
     subject_condition_means = all_clean_data.groupby(['participant', 'condition'], observed=True)['rt_ms'].mean().unstack()
@@ -100,7 +100,7 @@ else:
     
     # Adjust Y-axis range
     ymin = plot_stats['mean'].min() - (plot_stats['sem'].max() * 5)
-    ymax = plot_stats['mean'].max() + (plot_stats['sem'].max() * 15) 
+    ymax = plot_stats['mean'].max() + (plot_stats['sem'].max() * 5) 
     plt.ylim(max(0, ymin), ymax)
 
     plt.tight_layout()

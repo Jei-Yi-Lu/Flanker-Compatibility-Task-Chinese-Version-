@@ -37,7 +37,7 @@ Upon completion of the experiment, a summary of performance is displayed on the 
 
 *target_type*: the target (i.e., square or diamond) in the circles.
 
-*compatibility*: the target type is the same (i.e., Congruent, con) or different (i.e., Incongruent, incon) from the distractor out of the circles.
+*condition*: the target type is the same (i.e., Congruent, con) or different (i.e., Incongruent, incon) from the distractor out of the circles.
 
 *dist_pos_x*: the x-axis position of the distractor that is out of the circles.
 
